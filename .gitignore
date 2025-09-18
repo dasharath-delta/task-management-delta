@@ -35,7 +35,8 @@ yarn-error.log*
 
 # vercel
 .vercel
-
+/app/Card
+/components/TaskCard.jsx
 # typescript
 *.tsbuildinfo
 next-env.d.ts

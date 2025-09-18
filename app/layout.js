@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import ReactToast from "@/components/ReactToast";
 
 const geistSans = Geist({
@@ -24,8 +23,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <div className="px-6 md:px-16 lg:px-24 xl:px-24">{children}</div>
+        {children}
         <ReactToast />
       </body>
     </html>

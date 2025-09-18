@@ -10,41 +10,46 @@ import {
   TableRow,
 } from "./ui/table";
 import { Button } from "./ui/button";
+import { useUserStore } from "@/store/useUserStore";
 
 const TasksList = () => {
+  const tasks = useUserStore((state) => state.tasks);
+
   return (
     <Table className={"mt-10"}>
-      <TableCaption>A List of your recent Tasks.</TableCaption>
+      <TableCaption>A list of your recent tasks.</TableCaption>
       <TableHeader className={"capitalize"}>
         <TableRow>
           <TableHead>No.</TableHead>
-          <TableHead>department</TableHead>
-          <TableHead>project</TableHead>
-          <TableHead>status</TableHead>
+          <TableHead>department Id</TableHead>
+          <TableHead>project Id</TableHead>
+          <TableHead>status Id</TableHead>
           <TableHead>task</TableHead>
           <TableHead>remarks</TableHead>
           <TableHead>startDateTime</TableHead>
           <TableHead>endDateTime</TableHead>
-          <TableHead>pointGivenUserId</TableHead>
-          <TableHead>Edit-Task</TableHead>
+          <TableHead>pointGivenUser Id</TableHead>
+          {/* <TableHead>Edit-Task</TableHead> */}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {taskList &&
-          taskList.map((task, i) => (
+        {tasks &&
+          tasks.map((task, i) => (
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
-              <TableCell>{task.department}</TableCell>
-              <TableCell>{task.project}</TableCell>
-              <TableCell>{task.task}</TableCell>
-              <TableCell>{task.remarks}</TableCell>
-              <TableCell>{task.status}</TableCell>
-              <TableCell>{task.startDateTime}</TableCell>
-              <TableCell>{task.endDateTime}</TableCell>
-              <TableCell className={"text-right"}>{task.pointGivenUserId}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{task.deptId}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{task.projectId}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{task.statusId}</TableCell>
+              <TableCell className="max-w-[200px] truncate capitalize">{task.task}</TableCell>
+              <TableCell className="max-w-[200px] truncate capitalize">{task.remarks}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{task.startDateTime}</TableCell>
+              <TableCell className="max-w-[200px] truncate">{task.endDateTime}</TableCell>
               <TableCell >
-                <Button>Edit</Button>
+                {task.pointGivenUserId}
               </TableCell>
+              {/* <TableCell>
+                <Button>Edit</Button>
+              </TableCell> */}
             </TableRow>
           ))}
       </TableBody>
