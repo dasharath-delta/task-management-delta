@@ -2,12 +2,11 @@
 import AddTaskForm from "@/components/AddTaskForm";
 import Banner from "@/components/Banner";
 import Navbar from "@/components/Navbar";
-import TasksList from "@/components/TasksList";
-import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/store/useUserStore";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
+import CardList from "@/components/CardList";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -24,20 +23,21 @@ export default function Home() {
     <>
       {userId && userId !== "undefined" && <Navbar />}
 
-      <main className="mt-10 px-6 md:px-16 lg:px-24 xl:px-24">
+      <main className="my-10 px-6 md:px-16 lg:px-24 xl:px-24">
         <Banner />
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-3 p-4">
+          <h1 className=" text-gray-600 font-semibold">Add New Task</h1>
           <PlusCircle
-          size={44}
-          color="white"
-          className="bg-blue-500 rounded-full cursor-pointer hover:bg-blue-600 duration-200"
+            size={44}
+            color="white"
+            className="bg-blue-500 rounded-full shadow-2xl cursor-pointer hover:bg-blue-600 duration-200"
             onClick={() => {
               setOpen(true);
               getDepartments();
             }}
           />
         </div>
-        <TasksList />
+        <CardList />
         {open && <AddTaskForm setOpen={setOpen} />}
       </main>
     </>

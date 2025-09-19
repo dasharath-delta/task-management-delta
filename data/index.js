@@ -1,89 +1,22 @@
-export const taskList = [
+export const statusOptions = [
   {
-    department: "Engineering",
-    project: "Website Redesign",
-    status: "In Progress",
-    task: "Implement login page UI",
-    remarks: "Pending API integration",
-    startDateTime: "2025-09-10T09:00:00Z",
-    endDateTime: "2025-09-12T18:00:00Z",
-    pointGivenUserId: "USR102",
+    id: "3c6f039a-c2d6-4cbb-9d3d-56a5fbe77e42",
+    label: "Completed",
+    color: "bg-green-100 text-green-800",
   },
   {
-    department: "Marketing",
-    project: "Product Launch Campaign",
-    status: "Completed",
-    task: "Design social media creatives",
-    remarks: "Approved by manager",
-    startDateTime: "2025-09-05T10:00:00Z",
-    endDateTime: "2025-09-07T17:30:00Z",
-    pointGivenUserId: "USR208",
+    id: "d4b02b8b-cf7d-4d33-b87d-532b9b4d1fa9",
+    label: "In Progress",
+    color: "bg-yellow-100 text-yellow-800",
   },
   {
-    department: "HR",
-    project: "Employee Onboarding",
-    status: "Pending",
-    task: "Prepare welcome kits",
-    remarks: "Waiting for vendor confirmation",
-    startDateTime: "2025-09-15T08:30:00Z",
-    endDateTime: "2025-09-20T16:00:00Z",
-    pointGivenUserId: "USR315",
+    id: "88bb4602-ea65-4061-b126-d680ed79e4d6",
+    label: "Pending",
+    color: "bg-blue-100 text-blue-800",
   },
   {
-    department: "Finance",
-    project: "Quarterly Audit",
-    status: "In Progress",
-    task: "Compile expense reports",
-    remarks: "Need final data from accounts team",
-    startDateTime: "2025-09-12T11:00:00Z",
-    endDateTime: "2025-09-18T15:00:00Z",
-    pointGivenUserId: "USR150",
-  },
-  {
-    department: "IT Support",
-    project: "System Upgrade",
-    status: "Not Started",
-    task: "Install security patches",
-    remarks: "Scheduled for weekend",
-    startDateTime: "2025-09-19T09:30:00Z",
-    endDateTime: "2025-09-19T13:30:00Z",
-    pointGivenUserId: "USR401",
+    id: "b08d9a22-bf3f-4a8e-9982-47d544a56f88",
+    label: "Not Started",
+    color: "bg-red-100 text-red-800",
   },
 ];
-
-export const list = {
-  departments: [
-    {
-      name: "Engineering",
-      projects: [
-        "Website Redesign",
-        "Mobile App Development",
-        "API Integration",
-      ],
-    },
-    {
-      name: "Marketing",
-      projects: [
-        "Product Launch Campaign",
-        "Social Media Strategy",
-        "Email Outreach",
-      ],
-    },
-    {
-      name: "HR",
-      projects: [
-        "Employee Onboarding",
-        "Training Program",
-        "Performance Review System",
-      ],
-    },
-    {
-      name: "Finance",
-      projects: ["Quarterly Audit", "Budget Planning", "Expense Automation"],
-    },
-    {
-      name: "IT Support",
-      projects: ["System Upgrade", "Network Security", "Cloud Migration"],
-    },
-  ],
-};

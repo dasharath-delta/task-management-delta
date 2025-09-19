@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,84 +20,76 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import { statusOptions } from "@/data";
 import { useUserStore } from "@/store/useUserStore";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { cn } from "@/lib/utils";
 
 const AddTaskForm = ({ setOpen }) => {
-  const { departments, projects, getProjects, addTask, user, errors } =
-    useUserStore();
-
-  const statusOptions = [
-    { id: "3c6f039a-c2d6-4cbb-9d3d-56a5fbe77e42", label: "Completed" },
-    { id: "d4b02b8b-cf7d-4d33-b87d-532b9b4d1fa9", label: "In Progress" },
-    { id: "88bb4602-ea65-4061-b126-d680ed79e4d6", label: "Pending" },
-    { id: "b08d9a22-bf3f-4a8e-9982-47d544a56f88", label: "Not Started" },
-  ];
+  const departments = useUserStore((state) => state.departments);
+  const projects = useUserStore((state) => state.projects);
+  const getProjects = useUserStore((state) => state.getProjects);
+  const addTask = useUserStore((state) => state.addTask);
+  const user = useUserStore((state) => state.user);
+  const errors = useUserStore((state) => state.errors);
 
   const [formData, setFormData] = useState({
     deptId: "",
     projectId: "",
     statusId: "",
     task: "",
-    remarks: "",
-    contactName: user.FirstName,
+    remarks: "" || "Not Set",
+    contactName: user?.FirstName,
     contactNo: "1234567890",
-    callDateTime: "",
-    startDateTime: "",
-    endDateTime: "",
-    pointGivenUserId: user.UserId,
-    pointsGivenTo1: user.UserId,
-    pointsGivenTo2: user.UserId,
-    insertedByUserId: user.UserId,
+    callDateTime: "" || "Not Set",
+    startDateTime: null,
+    endDateTime: null,
+    pointGivenUserId: user?.UserId,
+    pointsGivenTo1: user?.UserId,
+    pointsGivenTo2: user?.UserId,
+    insertedByUserId: user?.UserId,
     targetDate: new Date().toISOString(),
   });
 
-  const formatDateTimeLocal = (dateObj) => {
-    const pad = (n) => (n < 10 ? "0" + n : n);
-    return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(
-      dateObj.getDate()
-    )}T${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
-  };
-  const formattedDateTime = formatDateTimeLocal(new Date());
+  const requiredFields = ["deptId", "projectId", "statusId", "task"];
 
+  const isFormValid = requiredFields.every(
+    (field) => formData[field] && formData[field].toString().trim() !== ""
+  );
   const minusMinutes = (minutes) => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - minutes);
-    return formatDateTimeLocal(now);
+    return new Date(now);
   };
 
-  const requiredFields = [
-    "deptId",
-    "projectId",
-    "statusId",
-    "task",
-    "startDateTime",
-    "endDateTime",
-  ];
-  const isFormValid = requiredFields.every((field) => formData[field]);
   const handleSaveTask = async (e) => {
     e.preventDefault();
+
     if (!isFormValid) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    try {
-      const response = await addTask(formData);
 
-      // if (response[0].DDId) {
-      //   toast.success("Task Added");
-      //   setFormData({
-      //     deptId: "",
-      //     projectId: "",
-      //     statusId: "",
-      //     task: "",
-      //     remarks: "",
-      //     callDateTime: "",
-      //     startDateTime: "",
-      //     endDateTime: "",
-      //   });
-      // }
+    try {
+      const payload = {
+        ...formData,
+        startDateTime: formData.startDateTime?.toISOString() || null,
+        endDateTime: formData.endDateTime?.toISOString() || null,
+        callDateTime: formData.startDateTime?.toISOString() || null,
+      };
+
+      await addTask(payload);
 
       setFormData({
         deptId: "",
@@ -104,29 +97,134 @@ const AddTaskForm = ({ setOpen }) => {
         statusId: "",
         task: "",
         remarks: "",
-        contactName: user.FirstName,
         contactNo: "1234567890",
         callDateTime: "",
-        startDateTime: "",
-        endDateTime: "",
-        pointGivenUserId: user.UserId,
-        pointsGivenTo1: user.UserId,
-        pointsGivenTo2: user.UserId,
-        insertedByUserId: user.UserId,
+        startDateTime: null,
+        endDateTime: null,
+        pointGivenUserId: user?.UserId,
+        pointsGivenTo1: user?.UserId,
+        pointsGivenTo2: user?.UserId,
+        insertedByUserId: user?.UserId,
         targetDate: new Date().toISOString(),
       });
-      setOpen(false);
+
       toast.success("Task Added Successfully!");
+      setOpen(false);
     } catch (err) {
       console.log(err);
       toast.error(errors || "Something went wrong.");
     }
   };
 
+  //  const handleSaveTask = async (e) => {
+  //   e.preventDefault();
+  //   if (!isFormValid) {
+  //     toast.error("Please fill in all required fields.");
+  //     return;
+  //   }
+  //   try {
+  //     const response = await addTask(formData);
+
+  //     // if (response[0].DDId) {
+  //     //   toast.success("Task Added");
+  //     //   setFormData({
+  //     //     deptId: "",
+  //     //     projectId: "",
+  //     //     statusId: "",
+  //     //     task: "",
+  //     //     remarks: "",
+  //     //     callDateTime: "",
+  //     //     startDateTime: "",
+  //     //     endDateTime: "",
+  //     //   });
+  //     // }
+
+  //     setFormData({
+  //       deptId: "",
+  //       projectId: "",
+  //       statusId: "",
+  //       task: "",
+  //       remarks: "",
+  //       contactNo: "1234567890",
+  //       callDateTime: "",
+  //       startDateTime: "",
+  //       endDateTime: "",
+  //     });
+  //     setOpen(false);
+  //     toast.success("Task Added Successfully!");
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error(errors || "Something went wrong.");
+  //   }
+  // };
+  const DatePicker = ({ label, date, setDate, quickSetButtons = false }) => (
+    <div className="flex flex-col gap-2">
+      <Label>{label}</Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date ? format(date, "yyyy-MM-dd HH:mm") : "Pick date & time"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-2">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            initialFocus
+          />
+          <Input
+            type="time"
+            className="mt-2"
+            onChange={(e) => {
+              const [hours, minutes] = e.target.value.split(":");
+              if (date) {
+                const newDate = new Date(date);
+                newDate.setHours(+hours);
+                newDate.setMinutes(+minutes);
+                setDate(newDate);
+              }
+            }}
+            value={
+              date
+                ? `${String(date.getHours()).padStart(2, "0")}:${String(
+                    date.getMinutes()
+                  ).padStart(2, "0")}`
+                : ""
+            }
+          />
+        </PopoverContent>
+      </Popover>
+
+      {quickSetButtons && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {[20, 30, 40, 50, 60].map((min) => (
+            <Button
+              key={min}
+              size="sm"
+              variant="secondary"
+              type="button"
+              onClick={() => setDate(minusMinutes(min))}
+            >
+              -{min}m
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto p-4 backdrop-blur-sm">
       <div className="w-full max-w-5xl mx-auto">
-        <Card className="w-full">
+        <Card>
           <CardHeader className="text-center">
             <CardTitle className="capitalize text-xl sm:text-2xl">
               Add your task here
@@ -135,9 +233,9 @@ const AddTaskForm = ({ setOpen }) => {
               Enter your task details below.
             </CardDescription>
           </CardHeader>
+
           <CardContent>
             <form onSubmit={handleSaveTask}>
-              {/* Grid responsive layout */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Department */}
                 <div className="flex flex-col gap-2">
@@ -145,7 +243,11 @@ const AddTaskForm = ({ setOpen }) => {
                   <Select
                     value={formData.deptId}
                     onValueChange={(val) => {
-                      setFormData({ ...formData, deptId: val, projectId: "" });
+                      setFormData((prev) => ({
+                        ...prev,
+                        deptId: val,
+                        projectId: "",
+                      }));
                       getProjects(val);
                     }}
                   >
@@ -156,7 +258,7 @@ const AddTaskForm = ({ setOpen }) => {
                       <SelectGroup>
                         <SelectLabel>Departments</SelectLabel>
                         {departments?.map((d) => (
-                          <SelectItem value={d.TextListId} key={d.TextListId}>
+                          <SelectItem key={d.TextListId} value={d.TextListId}>
                             {d.Text}
                           </SelectItem>
                         ))}
@@ -171,7 +273,7 @@ const AddTaskForm = ({ setOpen }) => {
                   <Select
                     value={formData.projectId}
                     onValueChange={(val) =>
-                      setFormData({ ...formData, projectId: val })
+                      setFormData((prev) => ({ ...prev, projectId: val }))
                     }
                     disabled={!formData.deptId}
                   >
@@ -182,7 +284,7 @@ const AddTaskForm = ({ setOpen }) => {
                       <SelectGroup>
                         <SelectLabel>Projects</SelectLabel>
                         {projects?.map((p) => (
-                          <SelectItem value={p.TextListId} key={p.TextListId}>
+                          <SelectItem key={p.TextListId} value={p.TextListId}>
                             {p.Text}
                           </SelectItem>
                         ))}
@@ -197,7 +299,7 @@ const AddTaskForm = ({ setOpen }) => {
                   <Select
                     value={formData.statusId}
                     onValueChange={(val) =>
-                      setFormData({ ...formData, statusId: val })
+                      setFormData((prev) => ({ ...prev, statusId: val }))
                     }
                   >
                     <SelectTrigger className={"w-full"}>
@@ -207,7 +309,7 @@ const AddTaskForm = ({ setOpen }) => {
                       <SelectGroup>
                         <SelectLabel>Status</SelectLabel>
                         {statusOptions.map((s) => (
-                          <SelectItem value={s.id} key={s.id}>
+                          <SelectItem key={s.id} value={s.id}>
                             {s.label}
                           </SelectItem>
                         ))}
@@ -216,72 +318,31 @@ const AddTaskForm = ({ setOpen }) => {
                   </Select>
                 </div>
 
-                {/* Start DateTime */}
-                <div className="flex flex-col gap-2">
-                  <Label>Start DateTime *</Label>
-                  <Input
-                    type="datetime-local"
-                    value={formData.startDateTime}
-                    max={formattedDateTime}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        startDateTime: e.target.value,
-                        callDateTime: e.target.value,
-                      })
-                    }
-                  />
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {[20, 30, 40, 50, 60].map((min) => (
-                      <Button
-                        key={min}
-                        size="sm"
-                        variant="secondary"
-                        type="button"
-                        onClick={() =>
-                          setFormData({
-                            ...formData,
-                            startDateTime: minusMinutes(min),
-                            callDateTime: minusMinutes(min),
-                          })
-                        }
-                      >
-                        -{min}m
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                {/* Start DateTime Picker */}
+                <DatePicker
+                  label="Start Date & Time"
+                  date={formData.startDateTime}
+                  setDate={(date) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startDateTime: date,
+                      callDateTime: date?.toISOString() || "",
+                    }))
+                  }
+                  quickSetButtons
+                />
 
-                {/* End DateTime */}
-                <div className="flex flex-col gap-2">
-                  <Label>End DateTime *</Label>
-                  <Input
-                    type="datetime-local"
-                    value={formData.endDateTime}
-                    max={formattedDateTime}
-                    onChange={(e) =>
-                      setFormData({ ...formData, endDateTime: e.target.value })
-                    }
-                  />
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {[20, 30, 40, 50, 60].map((min) => (
-                      <Button
-                        key={min}
-                        size="sm"
-                        variant="secondary"
-                        type="button"
-                        onClick={() =>
-                          setFormData({
-                            ...formData,
-                            endDateTime: minusMinutes(min),
-                          })
-                        }
-                      >
-                        -{min}m
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <DatePicker
+                  label="End Date & Time"
+                  date={formData.endDateTime}
+                  setDate={(date) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      endDateTime: date,
+                    }))
+                  }
+                  quickSetButtons
+                />
 
                 {/* Task */}
                 <div className="col-span-full flex flex-col gap-2">
@@ -289,7 +350,7 @@ const AddTaskForm = ({ setOpen }) => {
                   <Textarea
                     value={formData.task}
                     onChange={(e) =>
-                      setFormData({ ...formData, task: e.target.value })
+                      setFormData((prev) => ({ ...prev, task: e.target.value }))
                     }
                     placeholder="Enter your task here"
                   />
@@ -301,7 +362,10 @@ const AddTaskForm = ({ setOpen }) => {
                   <Textarea
                     value={formData.remarks}
                     onChange={(e) =>
-                      setFormData({ ...formData, remarks: e.target.value })
+                      setFormData((prev) => ({
+                        ...prev,
+                        remarks: e.target.value,
+                      }))
                     }
                     placeholder="Enter your remarks here"
                   />
@@ -310,11 +374,11 @@ const AddTaskForm = ({ setOpen }) => {
                 {/* Read-only User ID */}
                 <div className="col-span-full flex flex-col gap-2">
                   <Label>Point Given User ID</Label>
-                  <Input value={formData.pointGivenUserId} readOnly />
+                  <Input value={formData?.pointGivenUserId} readOnly />
                 </div>
               </div>
 
-              {/* Buttons */}
+              {/* Action Buttons */}
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Button
                   className="w-full bg-green-700 hover:bg-green-800"

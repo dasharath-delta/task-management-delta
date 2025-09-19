@@ -35,7 +35,7 @@ const Login = () => {
         toast.success("Login Success");
         router.push("/");
       } else {
-        toast.error(errors);
+        toast.error(response);
       }
       setFormData({
         userName: "",

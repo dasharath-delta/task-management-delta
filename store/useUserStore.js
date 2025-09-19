@@ -132,7 +132,12 @@ export const useUserStore = create(
     }),
     {
       name: "user-storage",
-      partialize: (state) => ({ user: state.user, tasks: state.tasks }),
+      partialize: (state) => ({
+        user: state.user,
+        tasks: state.tasks,
+        departments: state.departments,
+        projects: state.projects,
+      }),
     }
   )
 );
