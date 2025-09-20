@@ -7,11 +7,12 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
 import CardList from "@/components/CardList";
+import { RightOutlined } from "@ant-design/icons";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
-  const { getDepartments } = useUserStore();
+  const getDepartments = useUserStore((state) => state.getDepartments);
 
   useEffect(() => {
     if (!userId) {
@@ -27,6 +28,7 @@ export default function Home() {
         <Banner />
         <div className="flex justify-end items-center gap-3 p-4">
           <h1 className=" text-gray-600 font-semibold">Add New Task</h1>
+          <RightOutlined className="animate-ping " />
           <PlusCircle
             size={44}
             color="white"

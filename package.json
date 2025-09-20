@@ -9,15 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.13",
+    "antd": "^5.27.4",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.18",
     "dotenv": "^17.2.2",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.544.0",
@@ -30,6 +33,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@ant-design/icons": "^5.6.1",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",

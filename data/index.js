@@ -20,3 +20,5 @@ export const statusOptions = [
     color: "bg-red-100 text-red-800",
   },
 ];
+
+// const handleSaveTask = async (e) => { // e.preventDefault(); // if (!isFormValid) { // toast.error("Please fill in all required fields."); // return; // } // try { // const response = await addTask(formData); // if (response[0].DDId) { // toast.success("Task Added"); // setFormData({ // deptId: "", // projectId: "", // statusId: "", // task: "", // remarks: "", // startDateTime: "", // endDateTime: "", // }); // } // setFormData({ // deptId: "", // projectId: "", // statusId: "", // task: "", // remarks: "", // startDateTime: "", // endDateTime: "", // }); // setOpen(false); // toast.success("Task Added Successfully!"); // } catch (err) { // console.log(err); // toast.error(errors || "Something went wrong."); // } // };
