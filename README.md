@@ -22,7 +22,9 @@ A task management application built using **Next.js**. Helps you organize, track
 
 ## Demo
 
-*(If you have a live version or screenshots, add them here.)*
+!["Home Screen with all tasks list"](image.png)
+!["Add Task Form"](image-1.png)
+![All tasks list status wise](image-2.png)
 
 ---
 
