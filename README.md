@@ -15,7 +15,6 @@ A task management application built using **Next.js**. Helps you organize, track
   - [Running Locally](#running-locally)  
 - [Project Structure](#project-structure)  
 
-
 ---
 
 ## Demo
@@ -44,6 +43,7 @@ A task management application built using **Next.js**. Helps you organize, track
 | State management | Zustand |
 | Styling / CSS | Tailwind |
 | Other libraries | Shadcn/ui , antd |
+=======
 
 ---
 
@@ -52,6 +52,7 @@ A task management application built using **Next.js**. Helps you organize, track
 ### Prerequisites
 
 Make sure you have:
+
 
 - Node.js (version 20.0 or higher)  
 - npm / yarn / pnpm installed  
