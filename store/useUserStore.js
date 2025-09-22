@@ -28,6 +28,7 @@ export const useUserStore = create(
               secure: process.env.NODE_ENV === "production",
               expires: 7,
               path: "/",
+              sameSite:process.env.NODE_ENV === "production" ? "None" : "Strict"
             });
           } else {
             set({ errors: "No record found." });
