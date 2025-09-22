@@ -10,13 +10,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUserStore } from "@/store/useUserStore";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 const Login = () => {
   const { isLoading, errors, loginUser } = useUserStore();
-
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState({
     userName: "",
@@ -82,13 +83,24 @@ const Login = () => {
                   id="password"
                   name="password"
                   onChange={handleChange}
-                  type="password"
+                  type={!showPassword ? "password" : "text"}
                   value={formData.password}
                   placeholder="Enter Password"
                   required
                 />
               </div>
-
+              <div className="col-span-full" onClick={() => setShowPassword((prev) => !prev)}>
+                
+                {showPassword ? <div className="flex gap-3 items-center justify-end">
+                  <p>Hide Password</p>
+                  <EyeOutlined />
+                </div> : 
+                <div className="flex gap-3 items-center justify-end">
+                  <p>Show Password</p>
+                  <EyeInvisibleOutlined />
+                </div>
+                }
+              </div>
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? "Login..." : "Login"}
               </Button>

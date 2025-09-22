@@ -10,7 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-import { Select, DatePicker, Flex, Button, Switch } from "antd";
+import { Select, DatePicker, Button, Switch } from "antd";
 import dayjs from "dayjs";
 
 import { statusOptions } from "@/data";
@@ -26,7 +26,7 @@ const AddTaskForm = ({ setOpen }) => {
   const user = useUserStore((state) => state.user);
   const errors = useUserStore((state) => state.errors);
 
-  const [toggleBtn, setToggleBtn] = useState(true);
+  const [toggleBtn, setToggleBtn] = useState(false);
 
   const [formData, setFormData] = useState({
     deptId: "",
@@ -115,9 +115,7 @@ const AddTaskForm = ({ setOpen }) => {
     }
   };
   return (
-    <div
-      className="fixed inset-0 z-50 overflow-y-auto p-4 backdrop-blur-sm"
-    >
+    <div className="fixed inset-0 z-50 overflow-y-auto p-4 backdrop-blur-sm">
       <div className="w-full max-w-5xl mx-auto">
         <Card>
           <CardHeader className="text-center">
@@ -168,7 +166,7 @@ const AddTaskForm = ({ setOpen }) => {
                     }
                     value={formData.projectId || undefined}
                     disabled={!formData.deptId}
-                    options={projects?.map((p) => ({
+                    options={projects[formData.deptId]?.map((p) => ({
                       label: p.Text,
                       value: p.TextListId,
                     }))}
@@ -234,10 +232,14 @@ const AddTaskForm = ({ setOpen }) => {
                   />
                 </div>
                 <div className="col-span-full">
-                  <Switch
-                    checked={toggleBtn}
-                    onChange={() => setToggleBtn((prev) => !prev)}
-                  /> Toggle Time
+                  <div className="flex gap-4 items-center">
+                    <span>Start Time</span>
+                    <Switch
+                      checked={toggleBtn}
+                      onChange={() => setToggleBtn((prev) => !prev)}
+                    />
+                    <span>End Time</span>
+                  </div>
                 </div>
                 <div className="col-span-full flex gap-3 flex-wrap">
                   {[10, 20, 30, 40, 50, 60].map((t) => (

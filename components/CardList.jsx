@@ -27,9 +27,14 @@ const CardList = () => {
   const department = (dId) =>
     departments?.find((d) => d?.TextListId === dId)?.Text || "N/A";
 
-  const project = (pId) =>
-    projects?.find((p) => p?.TextListId === pId)?.Text || "No Project Found";
-
+  const project = (pId) => {
+    for (const deptProjects of Object.values(projects || {})) {
+      const found = deptProjects.find((p) => p?.TextListId === pId);
+      if (found) return found.Text;
+    }
+    return "No Porject Found";
+  };
+  
   const calculateDuration = (start, end) => {
     const startTime = start ? new Date(start) : null;
     const endTime = end ? new Date(end) : null;
@@ -109,7 +114,7 @@ const CardList = () => {
           </TabsTrigger>
           {Object.keys(groupedTasks).map((statusId) => (
             <TabsTrigger key={statusId} value={statusId} className="capitalize">
-              {getStatusColor(statusId)?.label} {" "} {statusCounts[statusId]}
+              {getStatusColor(statusId)?.label} {statusCounts[statusId]}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -131,7 +136,10 @@ const CardList = () => {
                     <CardHeader>
                       <div className="flex justify-between items-center gap-2">
                         <CardTitle className="text-xs capitalize font-bold text-black leading-tight line-clamp-2 flex-1">
-                          Task :<span className="pl-1 text-black/80">{task.task}</span>
+                          Task :
+                          <span className="pl-1 text-black/80">
+                            {task.task}
+                          </span>
                         </CardTitle>
                         <Badge
                           className={`${

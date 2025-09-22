@@ -10,7 +10,7 @@ export const useUserStore = create(
       user: null,
       errors: null,
       departments: null,
-      projects: null,
+      projects: {},
       tasks: [],
       loginUser: async (userData) => {
         set({ isLoading: true, errors: null });
@@ -87,7 +87,13 @@ export const useUserStore = create(
             }
           );
           if (data !== "No record found.") {
-            set({ projects: data, errors: null });
+            set((state) => ({
+              projects: {
+                ...state.projects,
+                [dId]: data,
+              },
+              errors: null,
+            }));
           } else {
             console.log("Error", data);
           }
