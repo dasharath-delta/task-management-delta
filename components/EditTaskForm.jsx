@@ -1,46 +1,40 @@
 "use client";
-
+import { Button, DatePicker, Select, Switch } from "antd";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-
-import { Select, DatePicker, Button, Switch } from "antd";
-import dayjs from "dayjs";
-
-import { statusOptions } from "@/data";
+} from "./ui/card";
+import { Label } from "./ui/label";
 import { useUserStore } from "@/store/useUserStore";
-import React, { useState } from "react";
+import { statusOptions } from "@/data";
+import dayjs from "dayjs";
+import { toDate } from "date-fns";
+import { Textarea } from "./ui/textarea";
 import { toast } from "react-toastify";
 import { Asterisk } from "lucide-react";
 
-const AddTaskForm = ({ setOpen }) => {
+const EditTaskForm = ({ setIsEdit, editTask }) => {
   const departments = useUserStore((state) => state.departments);
   const projects = useUserStore((state) => state.projects);
   const getProjects = useUserStore((state) => state.getProjects);
-  const addTask = useUserStore((state) => state.addTask);
-  const user = useUserStore((state) => state.user);
-  const errors = useUserStore((state) => state.errors);
-
-  const [toggleBtn, setToggleBtn] = useState(false);
+  const updateTask = useUserStore((state) => state.updateTask);
 
   const [formData, setFormData] = useState({
-    deptId: "",
-    projectId: "",
-    statusId: "",
-    task: "",
-    remarks: "",
-    startDateTime: null,
-    endDateTime: null,
-    pointGivenUserId: user?.UserId,
-    insertedByUserId: user?.UserId,
-    targetDate: new Date().toISOString(),
+    deptId: editTask?.deptId || null,
+    projectId: editTask?.projectId || null,
+    statusId: editTask?.statusId || null,
+    startDateTime: editTask?.startDateTime || null,
+    endDateTime: editTask?.endDateTime || null,
+    task: editTask?.task || "",
+    remarks: editTask?.remarks || "Not Set",
   });
+
+  const [toggleBtn, setToggleBtn] = useState(false);
 
   const requiredFields = ["deptId", "projectId", "statusId", "task"];
 
@@ -48,53 +42,6 @@ const AddTaskForm = ({ setOpen }) => {
     (field) => formData[field] && formData[field].toString().trim() !== ""
   );
 
-  const handleSaveTask = async (e) => {
-    e.preventDefault();
-
-    if (!isFormValid) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
-
-    if (
-      formData.startDateTime &&
-      formData.endDateTime &&
-      new Date(formData.endDateTime) < new Date(formData.startDateTime)
-    ) {
-      toast.error("End time cannot be before start time.");
-      return;
-    }
-
-    try {
-      const payload = {
-        ...formData,
-        startDateTime: formData.startDateTime?.toISOString() || null,
-        endDateTime: formData.endDateTime?.toISOString() || null,
-        callDateTime: formData.startDateTime?.toISOString() || null,
-      };
-
-      await addTask(payload);
-
-      setFormData({
-        deptId: "",
-        projectId: "",
-        statusId: "",
-        task: "",
-        remarks: "",
-        startDateTime: null,
-        endDateTime: null,
-        pointGivenUserId: user?.UserId,
-        insertedByUserId: user?.UserId,
-        targetDate: new Date().toISOString(),
-      });
-
-      toast.success("Task Added Successfully!");
-      setOpen(false);
-    } catch (err) {
-      console.log(err);
-      toast.error(errors || "Something went wrong.");
-    }
-  };
   const handleTime = (minutes) => {
     let now = new Date();
     if (toggleBtn) {
@@ -115,16 +62,52 @@ const AddTaskForm = ({ setOpen }) => {
       toast.error("select valid time");
     }
   };
+
+  const handleUpdateTask = (taskId) => {
+    if (!isFormValid) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
+    if (
+      formData.startDateTime &&
+      formData.endDateTime &&
+      new Date(formData.endDateTime) < new Date(formData.startDateTime)
+    ) {
+      toast.error("End time cannot be before start time");
+      return;
+    }
+
+    try {
+      updateTask(taskId, formData);
+      setFormData({
+        deptId: "",
+        projectId: "",
+        statusId: "",
+        task: "",
+        remarks: "",
+        startDateTime: null,
+        endDateTime: null,
+      });
+
+      toast.success("Task Updated Successfully");
+      setIsEdit(false);
+    } catch (err) {
+      console.log("Edit Error :", err);
+      toast.error("Task Update Failed");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto p-4 backdrop-blur-sm">
       <div className="w-full max-w-5xl mx-auto">
         <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="capitalize text-xl sm:text-2xl">
-              Add your task here
+          <CardHeader className="text-center ">
+            <CardTitle className={"capitalize text-xl sm:text-2xl"}>
+              Update your task here
             </CardTitle>
-            <CardDescription className="text-sm sm:text-base">
-              Enter your task details below.
+            <CardDescription className={"text-sm sm:text-base"}>
+              Enter your new task details below.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -138,14 +121,10 @@ const AddTaskForm = ({ setOpen }) => {
                   <Select
                     className="text-black"
                     showSearch
-                    placeholder="Select department"
+                    placeholder="select department"
                     optionFilterProp="label"
                     onChange={(val) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        deptId: val,
-                        projectId: "",
-                      }));
+                      setFormData((prev) => ({ ...prev, deptId: val }));
                       getProjects(val);
                     }}
                     value={formData.deptId || undefined}
@@ -155,30 +134,28 @@ const AddTaskForm = ({ setOpen }) => {
                     }))}
                   />
                 </div>
-
-                {/* Project */}
+                {/* Projects */}
                 <div className="flex flex-col gap-2">
                   <Label>
-                    Project <Asterisk size={12} color="red" />
+                    Projects <Asterisk size={12} color="red" />
                   </Label>
                   <Select
                     className="text-black"
                     showSearch
-                    placeholder="Select project"
+                    placeholder="select project"
                     optionFilterProp="label"
-                    onChange={(val) =>
-                      setFormData((prev) => ({ ...prev, projectId: val }))
-                    }
+                    onChange={(val) => {
+                      setFormData((prev) => ({ ...prev, projectId: val }));
+                    }}
                     value={formData.projectId || undefined}
-                    disabled={!formData.deptId}
-                    options={projects[formData.deptId]?.map((p) => ({
-                      label: p.Text,
-                      value: p.TextListId,
+                    options={projects[formData.deptId]?.map((d) => ({
+                      label: d.Text,
+                      value: d.TextListId,
                     }))}
                   />
                 </div>
 
-                {/* Status */}
+                {/* status */}
                 <div className="flex flex-col gap-2">
                   <Label>
                     Status <Asterisk size={12} color="red" />
@@ -186,7 +163,7 @@ const AddTaskForm = ({ setOpen }) => {
                   <Select
                     className="text-black"
                     showSearch
-                    placeholder="Select status"
+                    placeholder="select status"
                     optionFilterProp="label"
                     onChange={(val) =>
                       setFormData((prev) => ({ ...prev, statusId: val }))
@@ -205,16 +182,16 @@ const AddTaskForm = ({ setOpen }) => {
                   <DatePicker
                     showTime
                     className="w-full"
-                    format="YYYY-MM-DD HH:mm"
+                    format={"YYYY-MM-DD HH:mm"}
                     value={
                       formData.startDateTime
                         ? dayjs(formData.startDateTime)
                         : null
                     }
-                    onChange={(value) =>
+                    onChange={(val) =>
                       setFormData((prev) => ({
                         ...prev,
-                        startDateTime: value ? value.toDate() : null,
+                        startDateTime: val ? val.toDate() : null,
                       }))
                     }
                   />
@@ -226,19 +203,21 @@ const AddTaskForm = ({ setOpen }) => {
                   <DatePicker
                     showTime
                     className="w-full"
-                    format="YYYY-MM-DD HH:mm"
+                    format={"YYYY-MM-DD HH:mm"}
                     value={
                       formData.endDateTime ? dayjs(formData.endDateTime) : null
                     }
-                    onChange={(value) =>
+                    onChange={(val) =>
                       setFormData((prev) => ({
                         ...prev,
-                        endDateTime: value ? value.toDate() : null,
+                        endDateTime: val ? toDate() : null,
                       }))
                     }
                   />
                 </div>
-                <div className="col-span-full">
+
+                {/* Toggle Time */}
+                <div className="col-span-full ">
                   <div className="flex gap-4 items-center">
                     <span>Start Time</span>
                     <Switch
@@ -248,12 +227,14 @@ const AddTaskForm = ({ setOpen }) => {
                     <span>End Time</span>
                   </div>
                 </div>
+
+                {/* Min Button */}
                 <div className="col-span-full flex gap-3 flex-wrap">
                   {[10, 20, 30, 40, 50, 60].map((t) => (
                     <Button
                       className="min-w-24"
                       color={toggleBtn ? "primary" : "default"}
-                      variant="solid"
+                      variant={"solid"}
                       key={t}
                       onClick={() => handleTime(t)}
                     >
@@ -262,6 +243,7 @@ const AddTaskForm = ({ setOpen }) => {
                     </Button>
                   ))}
                 </div>
+
                 {/* Task */}
                 <div className="col-span-full flex flex-col gap-2">
                   <Label>
@@ -270,12 +252,14 @@ const AddTaskForm = ({ setOpen }) => {
                   <Textarea
                     value={formData.task}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, task: e.target.value }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        task: e.target.value,
+                      }))
                     }
                     placeholder="Enter your task here"
                   />
                 </div>
-
                 {/* Remarks */}
                 <div className="col-span-full flex flex-col gap-2">
                   <Label>Remarks</Label>
@@ -291,32 +275,29 @@ const AddTaskForm = ({ setOpen }) => {
                   />
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Button
-                  className="w-full"
-                  color="danger"
-                  variant="solid"
-                  onClick={() => setOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="w-full"
-                  type="primary"
-                  disabled={!isFormValid}
-                  onClick={handleSaveTask}
-                >
-                  Save Task
-                </Button>
-              </div>
             </div>
           </CardContent>
+          <CardFooter className={"grid gap-4 grid-cols-1 md:grid-cols-2"}>
+            <Button
+              color="danger"
+              variant="solid"
+              onClick={() => setIsEdit(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              variant="solid"
+              disabled={!isFormValid}
+              onClick={() => handleUpdateTask(editTask.id)}
+            >
+              Update Task
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     </div>
   );
 };
 
-export default AddTaskForm;
+export default EditTaskForm;

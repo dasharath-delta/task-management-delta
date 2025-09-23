@@ -13,8 +13,10 @@ import {
   PaginationNext,
   PaginationLink,
 } from "@/components/ui/pagination";
+import { Button } from "antd";
+import { toast } from "react-toastify";
 
-const CardList = () => {
+const CardList = ({setIsEdit,setEditTask}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState("all");
   const tasksPerPage = 6;
@@ -23,6 +25,7 @@ const CardList = () => {
   const user = useUserStore((state) => state.user);
   const departments = useUserStore((state) => state.departments);
   const projects = useUserStore((state) => state.projects);
+  const getTaskById = useUserStore((state) => state.getTaskById);
 
   const department = (dId) =>
     departments?.find((d) => d?.TextListId === dId)?.Text || "N/A";
@@ -34,7 +37,7 @@ const CardList = () => {
     }
     return "No Porject Found";
   };
-  
+
   const calculateDuration = (start, end) => {
     const startTime = start ? new Date(start) : null;
     const endTime = end ? new Date(end) : null;
@@ -99,6 +102,22 @@ const CardList = () => {
       return acc;
     }, {});
   }, [groupedTasks]);
+
+  const handleEdit = (tId) => {
+    if (!tId) {
+      toast.error("Task Id required");
+      return;
+    }
+    const task = getTaskById(tId);
+    if (!task) {
+      toast.error("Task not found");
+      return;
+    }
+    toast.success("Edit Mode");
+    setEditTask(task);
+    setIsEdit(true);
+
+  };
 
   return tasks.length > 0 ? (
     <>
@@ -210,6 +229,15 @@ const CardList = () => {
                         <p className="text-xs text-gray-800 font-semibold">
                           {task?.remarks}
                         </p>
+                      </div>
+                      <div className="mt-2">
+                        <Button
+                          color="geekblue"
+                          onClick={() => handleEdit(task?.id)}
+                          variant="solid"
+                        >
+                          Edit Task
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>

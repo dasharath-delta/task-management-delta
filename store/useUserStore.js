@@ -2,10 +2,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { v4 as uuid } from "uuid";
 
 export const useUserStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       isLoading: false,
       user: null,
       errors: null,
@@ -28,7 +29,8 @@ export const useUserStore = create(
               secure: process.env.NODE_ENV === "production",
               expires: 7,
               path: "/",
-              sameSite:process.env.NODE_ENV === "production" ? "None" : "Strict"
+              sameSite:
+                process.env.NODE_ENV === "production" ? "None" : "Strict",
             });
           } else {
             set({ errors: "No record found." });
@@ -110,21 +112,23 @@ export const useUserStore = create(
       addTask: async (taskData) => {
         // set({ isLoading: true, errors: null });
         // try {
-        //   // const { data } = await axios.post(
-        //   //   `${process.env.NEXT_PUBLIC_API_URL}/AddTask`,
-        //   //   JSON.stringify(taskData),
-        //   //   {
-        //   //     headers: {
-        //   //       "Content-Type": "application/json",
-        //   //       Accept: "*/*",
-        //   //     },
-        //   //   }
-        //   // );
-        //   // if (data[0].DDId) {
-        //   //   set({ tasks: [...tasks, taskData], errors: null });
-        //   // } else {
-        //   //   console.log("Error", data);
-        //   // }
+        //   const { data } = await axios.post(
+        //     `${process.env.NEXT_PUBLIC_API_URL}/AddTask`,
+        //     JSON.stringify(taskData),
+        //     {
+        //       headers: {
+        //         "Content-Type": "application/json",
+        //         Accept: "*/*",
+        //       },
+        //     }
+        //   );
+        //   if (data[0].DDId) {
+        //     set((state) => ({
+        //       tasks: [...state.tasks, taskData],
+        //     }));
+        //   } else {
+        //     console.log("Error", data);
+        //   }
         //   return taskData;
         // } catch (err) {
         //   set({ errors: "Failed to add task." });
@@ -133,8 +137,26 @@ export const useUserStore = create(
         //   set({ isLoading: false });
         // }
         set((state) => ({
-          tasks: [...state.tasks, taskData],
+          tasks: [...state.tasks, { ...taskData, id: uuid() }],
         }));
+      },
+
+      getTaskById: (tId) => {
+        const { tasks } = get();
+        return tasks.find((task) => task.id === tId);
+      },
+
+      updateTask: (tId, taskData) => {
+        try {
+          const { tasks } = get();
+          const updatedTasks = tasks.map((task) =>
+            task.id === tId ? { ...task, ...taskData } : task
+          );
+
+          set({ tasks: updatedTasks });
+        } catch (err) {
+          throw err;
+        }
       },
     }),
     {

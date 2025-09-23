@@ -8,9 +8,12 @@ import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
 import CardList from "@/components/CardList";
 import { RightOutlined } from "@ant-design/icons";
+import EditTaskForm from "@/components/EditTaskForm";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
+  const [isEdit,setIsEdit] = useState(false);
+  const [editTask, setEditTask] = useState()
   const [userId, setUserId] = useState("");
   const getDepartments = useUserStore((state) => state.getDepartments);
 
@@ -39,8 +42,9 @@ export default function Home() {
             }}
           />
         </div>
-        <CardList />
+        <CardList setIsEdit={setIsEdit} setEditTask={setEditTask} />
         {open && <AddTaskForm setOpen={setOpen} />}
+        {isEdit && <EditTaskForm editTask={editTask} setIsEdit={setIsEdit} />}
       </main>
     </>
   );
