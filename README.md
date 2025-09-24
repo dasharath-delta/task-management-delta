@@ -19,8 +19,11 @@ A task management application built using **Next.js**. Helps you organize, track
 
 ## Demo
 ![Login Page](<Screenshot 2025-09-24 115233.png>)
+---
 ![Home Screen](<Screenshot 2025-09-24 115338.png>)
+---
 ![Add-Task Form](<Screenshot 2025-09-24 115400.png>)
+---
 ![Edit-Task Form](<Screenshot 2025-09-24 115422.png>)
 ---
 
