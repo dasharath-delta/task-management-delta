@@ -1,6 +1,6 @@
-"use client";
-import { Button, DatePicker, Select, Switch } from "antd";
-import React, { useState } from "react";
+'use client';
+import { Button, DatePicker, Select, Switch } from 'antd';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -8,21 +8,21 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Label } from "./ui/label";
-import { useUserStore } from "@/store/useUserStore";
-import { statusOptions } from "@/data";
-import dayjs from "dayjs";
-import { toDate } from "date-fns";
-import { Textarea } from "./ui/textarea";
-import { toast } from "react-toastify";
-import { Asterisk } from "lucide-react";
+} from './ui/card';
+import { Label } from './ui/label';
+import { useUserStore } from '@/store/useUserStore';
+import { statusOptions } from '@/data';
+import dayjs from 'dayjs';
+import { toDate } from 'date-fns';
+import { Textarea } from './ui/textarea';
+import { toast } from 'react-toastify';
+import { Asterisk } from 'lucide-react';
 
 const EditTaskForm = ({ setIsEdit, editTask }) => {
-  const departments = useUserStore((state) => state.departments);
-  const projects = useUserStore((state) => state.projects);
-  const getProjects = useUserStore((state) => state.getProjects);
-  const updateTask = useUserStore((state) => state.updateTask);
+  const departments = useUserStore(state => state.departments);
+  const projects = useUserStore(state => state.projects);
+  const getProjects = useUserStore(state => state.getProjects);
+  const updateTask = useUserStore(state => state.updateTask);
 
   const [formData, setFormData] = useState({
     deptId: editTask?.deptId || null,
@@ -30,42 +30,42 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
     statusId: editTask?.statusId || null,
     startDateTime: editTask?.startDateTime || null,
     endDateTime: editTask?.endDateTime || null,
-    task: editTask?.task || "",
-    remarks: editTask?.remarks || "Not Set",
+    task: editTask?.task || '',
+    remarks: editTask?.remarks || 'Not Set',
   });
 
   const [toggleBtn, setToggleBtn] = useState(false);
 
-  const requiredFields = ["deptId", "projectId", "statusId", "task"];
+  const requiredFields = ['deptId', 'projectId', 'statusId', 'task'];
 
   const isFormValid = requiredFields.every(
-    (field) => formData[field] && formData[field].toString().trim() !== ""
+    field => formData[field] && formData[field].toString().trim() !== ''
   );
 
-  const handleTime = (minutes) => {
+  const handleTime = minutes => {
     let now = new Date();
     if (toggleBtn) {
       now.setMinutes(now.getMinutes() + minutes);
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         startDateTime: new Date(),
         endDateTime: now,
       }));
     } else if (!toggleBtn) {
       now.setMinutes(now.getMinutes() - minutes);
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         startDateTime: now,
         endDateTime: new Date(),
       }));
     } else {
-      toast.error("select valid time");
+      toast.error('select valid time');
     }
   };
 
-  const handleUpdateTask = (taskId) => {
+  const handleUpdateTask = taskId => {
     if (!isFormValid) {
-      toast.error("Please fill all required fields.");
+      toast.error('Please fill all required fields.');
       return;
     }
 
@@ -74,27 +74,27 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
       formData.endDateTime &&
       new Date(formData.endDateTime) < new Date(formData.startDateTime)
     ) {
-      toast.error("End time cannot be before start time");
+      toast.error('End time cannot be before start time');
       return;
     }
 
     try {
       updateTask(taskId, formData);
       setFormData({
-        deptId: "",
-        projectId: "",
-        statusId: "",
-        task: "",
-        remarks: "",
+        deptId: '',
+        projectId: '',
+        statusId: '',
+        task: '',
+        remarks: '',
         startDateTime: null,
         endDateTime: null,
       });
 
-      toast.success("Task Updated Successfully");
+      toast.success('Task Updated Successfully');
       setIsEdit(false);
     } catch (err) {
-      console.log("Edit Error :", err);
-      toast.error("Task Update Failed");
+      console.log('Edit Error :', err);
+      toast.error('Task Update Failed');
     }
   };
 
@@ -103,10 +103,10 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
       <div className="w-full max-w-5xl mx-auto">
         <Card>
           <CardHeader className="text-center ">
-            <CardTitle className={"capitalize text-xl sm:text-2xl"}>
+            <CardTitle className={'capitalize text-xl sm:text-2xl'}>
               Update your task here
             </CardTitle>
-            <CardDescription className={"text-sm sm:text-base"}>
+            <CardDescription className={'text-sm sm:text-base'}>
               Enter your new task details below.
             </CardDescription>
           </CardHeader>
@@ -116,19 +116,19 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                 {/* Department */}
                 <div className="flex flex-col gap-2">
                   <Label>
-                    Department <Asterisk size={12} color="red" />{" "}
+                    Department <Asterisk size={12} color="red" />{' '}
                   </Label>
                   <Select
                     className="text-black"
                     showSearch
                     placeholder="select department"
                     optionFilterProp="label"
-                    onChange={(val) => {
-                      setFormData((prev) => ({ ...prev, deptId: val }));
+                    onChange={val => {
+                      setFormData(prev => ({ ...prev, deptId: val }));
                       getProjects(val);
                     }}
                     value={formData.deptId || undefined}
-                    options={departments?.map((d) => ({
+                    options={departments?.map(d => ({
                       label: d.Text,
                       value: d.TextListId,
                     }))}
@@ -144,11 +144,11 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                     showSearch
                     placeholder="select project"
                     optionFilterProp="label"
-                    onChange={(val) => {
-                      setFormData((prev) => ({ ...prev, projectId: val }));
+                    onChange={val => {
+                      setFormData(prev => ({ ...prev, projectId: val }));
                     }}
                     value={formData.projectId || undefined}
-                    options={projects[formData.deptId]?.map((d) => ({
+                    options={projects[formData.deptId]?.map(d => ({
                       label: d.Text,
                       value: d.TextListId,
                     }))}
@@ -165,11 +165,11 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                     showSearch
                     placeholder="select status"
                     optionFilterProp="label"
-                    onChange={(val) =>
-                      setFormData((prev) => ({ ...prev, statusId: val }))
+                    onChange={val =>
+                      setFormData(prev => ({ ...prev, statusId: val }))
                     }
                     value={formData.statusId || undefined}
-                    options={statusOptions?.map((s) => ({
+                    options={statusOptions?.map(s => ({
                       label: s.label,
                       value: s.id,
                     }))}
@@ -182,14 +182,14 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                   <DatePicker
                     showTime
                     className="w-full"
-                    format={"YYYY-MM-DD HH:mm"}
+                    format={'YYYY-MM-DD HH:mm'}
                     value={
                       formData.startDateTime
                         ? dayjs(formData.startDateTime)
                         : null
                     }
-                    onChange={(val) =>
-                      setFormData((prev) => ({
+                    onChange={val =>
+                      setFormData(prev => ({
                         ...prev,
                         startDateTime: val ? val.toDate() : null,
                       }))
@@ -203,12 +203,12 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                   <DatePicker
                     showTime
                     className="w-full"
-                    format={"YYYY-MM-DD HH:mm"}
+                    format={'YYYY-MM-DD HH:mm'}
                     value={
                       formData.endDateTime ? dayjs(formData.endDateTime) : null
                     }
-                    onChange={(val) =>
-                      setFormData((prev) => ({
+                    onChange={val =>
+                      setFormData(prev => ({
                         ...prev,
                         endDateTime: val ? toDate() : null,
                       }))
@@ -222,7 +222,7 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                     <span>Start Time</span>
                     <Switch
                       checked={toggleBtn}
-                      onChange={() => setToggleBtn((prev) => !prev)}
+                      onChange={() => setToggleBtn(prev => !prev)}
                     />
                     <span>End Time</span>
                   </div>
@@ -230,15 +230,15 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
 
                 {/* Min Button */}
                 <div className="col-span-full flex gap-3 flex-wrap">
-                  {[10, 20, 30, 40, 50, 60].map((t) => (
+                  {[10, 20, 30, 40, 50, 60].map(t => (
                     <Button
                       className="min-w-24"
-                      color={toggleBtn ? "primary" : "default"}
-                      variant={"solid"}
+                      color={toggleBtn ? 'primary' : 'default'}
+                      variant={'solid'}
                       key={t}
                       onClick={() => handleTime(t)}
                     >
-                      {toggleBtn ? "+" : "-"}
+                      {toggleBtn ? '+' : '-'}
                       {t}min
                     </Button>
                   ))}
@@ -251,8 +251,8 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                   </Label>
                   <Textarea
                     value={formData.task}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
+                    onChange={e =>
+                      setFormData(prev => ({
                         ...prev,
                         task: e.target.value,
                       }))
@@ -265,8 +265,8 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
                   <Label>Remarks</Label>
                   <Textarea
                     value={formData.remarks}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
+                    onChange={e =>
+                      setFormData(prev => ({
                         ...prev,
                         remarks: e.target.value,
                       }))
@@ -277,7 +277,7 @@ const EditTaskForm = ({ setIsEdit, editTask }) => {
               </div>
             </div>
           </CardContent>
-          <CardFooter className={"grid gap-4 grid-cols-1 md:grid-cols-2"}>
+          <CardFooter className={'grid gap-4 grid-cols-1 md:grid-cols-2'}>
             <Button
               color="danger"
               variant="solid"

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Card,
@@ -6,113 +6,160 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
-import { Select, DatePicker, Button, Switch } from "antd";
-import dayjs from "dayjs";
+import { Select, DatePicker, Button, Switch } from 'antd';
+import dayjs from 'dayjs';
 
-import { statusOptions } from "@/data";
-import { useUserStore } from "@/store/useUserStore";
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { Asterisk } from "lucide-react";
+import { statusOptions } from '@/data';
+import { useUserStore } from '@/store/useUserStore';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { Asterisk } from 'lucide-react';
 
 const AddTaskForm = ({ setOpen }) => {
-  const departments = useUserStore((state) => state.departments);
-  const projects = useUserStore((state) => state.projects);
-  const getProjects = useUserStore((state) => state.getProjects);
-  const addTask = useUserStore((state) => state.addTask);
-  const user = useUserStore((state) => state.user);
-  const errors = useUserStore((state) => state.errors);
+  const departments = useUserStore(state => state.departments);
+  const projects = useUserStore(state => state.projects);
+  const getProjects = useUserStore(state => state.getProjects);
+  const addTask = useUserStore(state => state.addTask);
+  const user = useUserStore(state => state.user);
+  const errors = useUserStore(state => state.errors);
 
   const [toggleBtn, setToggleBtn] = useState(false);
 
   const [formData, setFormData] = useState({
-    deptId: "",
-    projectId: "",
-    statusId: "",
-    task: "",
-    remarks: "",
+    deptId: '',
+    projectId: '',
+    statusId: '',
+    task: '',
+    contactName: user?.FirstName,
+    contactNo: '1234567890',
+    callDateTime: null,
+    remarks: '',
     startDateTime: null,
     endDateTime: null,
     pointGivenUserId: user?.UserId,
+    pointsGivenTo1: user?.UserId,
+    pointsGivenTo2: user?.UserId,
     insertedByUserId: user?.UserId,
     targetDate: new Date().toISOString(),
   });
 
-  const requiredFields = ["deptId", "projectId", "statusId", "task"];
+  const requiredFields = ['deptId', 'projectId', 'statusId', 'task'];
 
   const isFormValid = requiredFields.every(
-    (field) => formData[field] && formData[field].toString().trim() !== ""
+    field => formData[field] && formData[field].toString().trim() !== ''
   );
 
-  const handleSaveTask = async (e) => {
-    e.preventDefault();
+  // const handleSaveTask = async (e) => {
+  //   e.preventDefault();
 
+  //   if (!isFormValid) {
+  //     toast.error("Please fill in all required fields.");
+  //     return;
+  //   }
+
+  //   if (
+  //     formData.startDateTime &&
+  //     formData.endDateTime &&
+  //     new Date(formData.endDateTime) < new Date(formData.startDateTime)
+  //   ) {
+  //     toast.error("End time cannot be before start time.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const payload = {
+  //       ...formData,
+  //       callDateTime: formData.startDateTime?.toISOString() || null,
+  //     };
+
+  //     await addTask(payload);
+
+  //     setFormData({
+  //       deptId: "",
+  //       projectId: "",
+  //       statusId: "",
+  //       task: "",
+  //       remarks: "",
+  //       startDateTime: null,
+  //       endDateTime: null,
+  //       pointGivenUserId: user?.UserId,
+  //       insertedByUserId: user?.UserId,
+  //       targetDate: new Date().toISOString(),
+  //     });
+
+  //     toast.success("Task Added Successfully!");
+  //     setOpen(false);
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error(errors || "Something went wrong.");
+  //   }
+  // };
+
+  const handleSaveTask = async e => {
+    e.preventDefault();
     if (!isFormValid) {
-      toast.error("Please fill in all required fields.");
+      toast.error('Please fill in all required fields.');
       return;
     }
-
     if (
       formData.startDateTime &&
       formData.endDateTime &&
       new Date(formData.endDateTime) < new Date(formData.startDateTime)
     ) {
-      toast.error("End time cannot be before start time.");
+      toast.error('End time cannot be before start time.');
       return;
     }
 
     try {
       const payload = {
         ...formData,
-        startDateTime: formData.startDateTime?.toISOString() || null,
-        endDateTime: formData.endDateTime?.toISOString() || null,
         callDateTime: formData.startDateTime?.toISOString() || null,
+        remarks: formData?.remarks || 'Not Set',
       };
 
-      await addTask(payload);
+      const response = await addTask(payload);
 
-      setFormData({
-        deptId: "",
-        projectId: "",
-        statusId: "",
-        task: "",
-        remarks: "",
-        startDateTime: null,
-        endDateTime: null,
-        pointGivenUserId: user?.UserId,
-        insertedByUserId: user?.UserId,
-        targetDate: new Date().toISOString(),
-      });
-
-      toast.success("Task Added Successfully!");
-      setOpen(false);
+      if (response[0].DDId) {
+        toast.success('Task Added');
+        setFormData({
+          deptId: '',
+          projectId: '',
+          statusId: '',
+          task: '',
+          remarks: '',
+          startDateTime: '',
+          endDateTime: '',
+        });
+        setOpen(false);
+      }
     } catch (err) {
       console.log(err);
-      toast.error(errors || "Something went wrong.");
+      toast.error(errors || 'Something went wrong.');
     }
   };
-  const handleTime = (minutes) => {
+
+  const handleTime = minutes => {
     let now = new Date();
     if (toggleBtn) {
       now.setMinutes(now.getMinutes() + minutes);
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         startDateTime: new Date(),
         endDateTime: now,
       }));
     } else if (!toggleBtn) {
       now.setMinutes(now.getMinutes() - minutes);
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         startDateTime: now,
         endDateTime: new Date(),
       }));
     } else {
-      toast.error("select valid time");
+      toast.error('select valid time');
     }
   };
   return (
@@ -133,23 +180,23 @@ const AddTaskForm = ({ setOpen }) => {
                 {/* Department */}
                 <div className="flex flex-col gap-2">
                   <Label>
-                    Department <Asterisk size={12} color="red" />{" "}
+                    Department <Asterisk size={12} color="red" />{' '}
                   </Label>
                   <Select
                     className="text-black"
                     showSearch
                     placeholder="Select department"
                     optionFilterProp="label"
-                    onChange={(val) => {
-                      setFormData((prev) => ({
+                    onChange={val => {
+                      setFormData(prev => ({
                         ...prev,
                         deptId: val,
-                        projectId: "",
+                        projectId: '',
                       }));
                       getProjects(val);
                     }}
                     value={formData.deptId || undefined}
-                    options={departments?.map((d) => ({
+                    options={departments?.map(d => ({
                       label: d.Text,
                       value: d.TextListId,
                     }))}
@@ -166,12 +213,12 @@ const AddTaskForm = ({ setOpen }) => {
                     showSearch
                     placeholder="Select project"
                     optionFilterProp="label"
-                    onChange={(val) =>
-                      setFormData((prev) => ({ ...prev, projectId: val }))
+                    onChange={val =>
+                      setFormData(prev => ({ ...prev, projectId: val }))
                     }
                     value={formData.projectId || undefined}
                     disabled={!formData.deptId}
-                    options={projects[formData.deptId]?.map((p) => ({
+                    options={projects[formData.deptId]?.map(p => ({
                       label: p.Text,
                       value: p.TextListId,
                     }))}
@@ -188,11 +235,11 @@ const AddTaskForm = ({ setOpen }) => {
                     showSearch
                     placeholder="Select status"
                     optionFilterProp="label"
-                    onChange={(val) =>
-                      setFormData((prev) => ({ ...prev, statusId: val }))
+                    onChange={val =>
+                      setFormData(prev => ({ ...prev, statusId: val }))
                     }
                     value={formData.statusId || undefined}
-                    options={statusOptions?.map((s) => ({
+                    options={statusOptions?.map(s => ({
                       label: s.label,
                       value: s.id,
                     }))}
@@ -211,8 +258,8 @@ const AddTaskForm = ({ setOpen }) => {
                         ? dayjs(formData.startDateTime)
                         : null
                     }
-                    onChange={(value) =>
-                      setFormData((prev) => ({
+                    onChange={value =>
+                      setFormData(prev => ({
                         ...prev,
                         startDateTime: value ? value.toDate() : null,
                       }))
@@ -230,8 +277,8 @@ const AddTaskForm = ({ setOpen }) => {
                     value={
                       formData.endDateTime ? dayjs(formData.endDateTime) : null
                     }
-                    onChange={(value) =>
-                      setFormData((prev) => ({
+                    onChange={value =>
+                      setFormData(prev => ({
                         ...prev,
                         endDateTime: value ? value.toDate() : null,
                       }))
@@ -243,21 +290,21 @@ const AddTaskForm = ({ setOpen }) => {
                     <span>Start Time</span>
                     <Switch
                       checked={toggleBtn}
-                      onChange={() => setToggleBtn((prev) => !prev)}
+                      onChange={() => setToggleBtn(prev => !prev)}
                     />
                     <span>End Time</span>
                   </div>
                 </div>
                 <div className="col-span-full flex gap-3 flex-wrap">
-                  {[10, 20, 30, 40, 50, 60].map((t) => (
+                  {[10, 20, 30, 40, 50, 60].map(t => (
                     <Button
                       className="min-w-24"
-                      color={toggleBtn ? "primary" : "default"}
+                      color={toggleBtn ? 'primary' : 'default'}
                       variant="solid"
                       key={t}
                       onClick={() => handleTime(t)}
                     >
-                      {toggleBtn ? "+" : "-"}
+                      {toggleBtn ? '+' : '-'}
                       {t}min
                     </Button>
                   ))}
@@ -269,8 +316,8 @@ const AddTaskForm = ({ setOpen }) => {
                   </Label>
                   <Textarea
                     value={formData.task}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, task: e.target.value }))
+                    onChange={e =>
+                      setFormData(prev => ({ ...prev, task: e.target.value }))
                     }
                     placeholder="Enter your task here"
                   />
@@ -281,8 +328,8 @@ const AddTaskForm = ({ setOpen }) => {
                   <Label>Remarks</Label>
                   <Textarea
                     value={formData.remarks}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
+                    onChange={e =>
+                      setFormData(prev => ({
                         ...prev,
                         remarks: e.target.value,
                       }))

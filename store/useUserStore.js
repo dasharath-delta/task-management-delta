@@ -1,8 +1,8 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { v4 as uuid } from "uuid";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { v4 as uuid } from 'uuid';
 
 export const useUserStore = create(
   persist(
@@ -13,7 +13,7 @@ export const useUserStore = create(
       departments: null,
       projects: {},
       tasks: [],
-      loginUser: async (userData) => {
+      loginUser: async userData => {
         set({ isLoading: true, errors: null });
         try {
           const { data } = await axios.post(
@@ -21,23 +21,23 @@ export const useUserStore = create(
             userData
           );
 
-          if (data !== "No record found.") {
+          if (data !== 'No record found.') {
             const loggedUser = data[0];
             set({ user: loggedUser, errors: null });
 
-            Cookies.set("userId", loggedUser.UserId, {
-              secure: process.env.NODE_ENV === "production",
+            Cookies.set('userId', loggedUser.UserId, {
+              secure: process.env.NODE_ENV === 'production',
               expires: 7,
-              path: "/",
+              path: '/',
               sameSite:
-                process.env.NODE_ENV === "production" ? "None" : "Strict",
+                process.env.NODE_ENV === 'production' ? 'None' : 'Strict',
             });
           } else {
-            set({ errors: "No record found." });
+            set({ errors: 'No record found.' });
           }
           return data;
         } catch (err) {
-          set({ errors: "User Not Found." });
+          set({ errors: 'User Not Found.' });
           throw err;
         } finally {
           set({ isLoading: false });
@@ -45,7 +45,7 @@ export const useUserStore = create(
       },
 
       logoutUser: () => {
-        Cookies.remove("userId");
+        Cookies.remove('userId');
         set({ user: null });
       },
 
@@ -54,29 +54,29 @@ export const useUserStore = create(
         try {
           const { data } = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/GetDepartment`,
-            "string",
+            'string',
             {
               headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
+                'Content-Type': 'application/json',
+                Accept: '*/*',
               },
             }
           );
-          if (data !== "No record found.") {
+          if (data !== 'No record found.') {
             set({ departments: data, errors: null });
           } else {
-            console.log("Error", data);
+            console.log('Error', data);
           }
           return data;
         } catch (err) {
-          set({ errors: "Departments Not Found." });
+          set({ errors: 'Departments Not Found.' });
           throw err;
         } finally {
           set({ isLoading: false });
         }
       },
 
-      getProjects: async (dId) => {
+      getProjects: async dId => {
         set({ isLoading: true, errors: null });
         try {
           const { data } = await axios.post(
@@ -84,13 +84,13 @@ export const useUserStore = create(
             JSON.stringify(dId),
             {
               headers: {
-                "Content-Type": "application/json",
-                Accept: "*/*",
+                'Content-Type': 'application/json',
+                Accept: '*/*',
               },
             }
           );
-          if (data !== "No record found.") {
-            set((state) => ({
+          if (data !== 'No record found.') {
+            set(state => ({
               projects: {
                 ...state.projects,
                 [dId]: data,
@@ -98,58 +98,59 @@ export const useUserStore = create(
               errors: null,
             }));
           } else {
-            console.log("Error", data);
+            console.log('Error', data);
           }
           return data;
         } catch (err) {
-          set({ errors: "Projects Not Found." });
+          set({ errors: 'Projects Not Found.' });
           throw err;
         } finally {
           set({ isLoading: false });
         }
       },
 
-      addTask: async (taskData) => {
-        // set({ isLoading: true, errors: null });
-        // try {
-        //   const { data } = await axios.post(
-        //     `${process.env.NEXT_PUBLIC_API_URL}/AddTask`,
-        //     JSON.stringify(taskData),
-        //     {
-        //       headers: {
-        //         "Content-Type": "application/json",
-        //         Accept: "*/*",
-        //       },
-        //     }
-        //   );
-        //   if (data[0].DDId) {
-        //     set((state) => ({
-        //       tasks: [...state.tasks, taskData],
-        //     }));
-        //   } else {
-        //     console.log("Error", data);
-        //   }
-        //   return taskData;
-        // } catch (err) {
-        //   set({ errors: "Failed to add task." });
-        //   throw err;
-        // } finally {
-        //   set({ isLoading: false });
-        // }
-        set((state) => ({
-          tasks: [...state.tasks, { ...taskData, id: uuid() }],
-        }));
+      addTask: async taskData => {
+        set({ isLoading: true, errors: null });
+        try {
+          const { data } = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/AddTask`,
+            taskData,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: '*/*',
+              },
+            }
+          );
+
+          if (data[0].DDId) {
+            set(state => ({
+              tasks: [...state.tasks, { ...taskData, id: uuid() }],
+            }));
+          } else {
+            console.log('Error', data);
+          }
+          return data;
+        } catch (err) {
+          set({ errors: 'Failed to add task.' });
+          throw err;
+        } finally {
+          set({ isLoading: false });
+        }
+        // set((state) => ({
+        //   tasks: [...state.tasks, { ...taskData, id: uuid() }],
+        // }));
       },
 
-      getTaskById: (tId) => {
+      getTaskById: tId => {
         const { tasks } = get();
-        return tasks.find((task) => task.id === tId);
+        return tasks.find(task => task.id === tId);
       },
 
       updateTask: (tId, taskData) => {
         try {
           const { tasks } = get();
-          const updatedTasks = tasks.map((task) =>
+          const updatedTasks = tasks.map(task =>
             task.id === tId ? { ...task, ...taskData } : task
           );
 
@@ -160,8 +161,8 @@ export const useUserStore = create(
       },
     }),
     {
-      name: "user-storage",
-      partialize: (state) => ({
+      name: 'user-storage',
+      partialize: state => ({
         user: state.user,
         tasks: state.tasks,
         departments: state.departments,

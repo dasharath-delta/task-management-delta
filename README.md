@@ -6,43 +6,43 @@ A task management application built using **Next.js**. Helps you organize, track
 
 ## Table of Contents
 
-- [Demo](#demo)  
-- [Features](#features)  
-- [Tech Stack](#tech-stack)  
-- [Getting Started](#getting-started)  
-  - [Prerequisites](#prerequisites)  
-  - [Installation](#installation)  
-  - [Running Locally](#running-locally)  
-- [Project Structure](#project-structure)  
+- [Demo](#demo)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running Locally](#running-locally)
+- [Project Structure](#project-structure)
 
 ---
 
 ## Demo
-
-!["Home Screen with all tasks list"](image.png)
-!["Add Task Form"](image-1.png)
-![All tasks list status wise](image-2.png)
-
+![Login Page](<Screenshot 2025-09-24 115233.png>)
+![Home Screen](<Screenshot 2025-09-24 115338.png>)
+![Add-Task Form](<Screenshot 2025-09-24 115400.png>)
+![Edit-Task Form](<Screenshot 2025-09-24 115422.png>)
 ---
 
 ## Features
 
-- Create, edit, delete tasks  
-- Task categorization (e.g. by status, priority)  
-- Responsive UI  
-- State management via store  
-- [Any additional features you’ve built in your project]  
+- Create, edit, tasks
+- Task categorization (e.g. by status)
+- Responsive UI
+- State management via store
+- Quick Set Time Btns
 
 ---
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|------------|
-| Frontend framework | Next.js |
-| State management | Zustand |
-| Styling / CSS | Tailwind |
-| Other libraries | Shadcn/ui , antd |
+| Component          | Technology       |
+| ------------------ | ---------------- |
+| Frontend framework | Next.js          |
+| State management   | Zustand          |
+| Styling / CSS      | Tailwind         |
+| Other libraries    | Shadcn/ui , antd |
+
 =======
 
 ---
@@ -53,9 +53,8 @@ A task management application built using **Next.js**. Helps you organize, track
 
 Make sure you have:
 
-
-- Node.js (version 20.0 or higher)  
-- npm / yarn / pnpm installed  
+- Node.js (version 20.0 or higher)
+- npm / yarn / pnpm installed
 
 ---
 
@@ -90,6 +89,8 @@ task-management-delta/
 ├── public/            # Public assets
 ├── store/             # State management
 ├── .gitignore
+├── .prettierignore
+├── .prettierrc
 ├── next.config.mjs
 ├── package.json
 └── README.md
@@ -97,3 +98,5 @@ task-management-delta/
 ini
 Copy code
 NEXT_PUBLIC_API_URL=your_api_endpoint
+NODE_ENV=development
+```
