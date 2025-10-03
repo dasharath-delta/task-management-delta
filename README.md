@@ -46,7 +46,6 @@ A task management application built using **Next.js**. Helps you organize, track
 | Styling / CSS      | Tailwind         |
 | Other libraries    | Shadcn/ui , antd |
 
-=======
 
 ---
 
